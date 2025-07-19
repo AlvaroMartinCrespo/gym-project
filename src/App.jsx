@@ -1,12 +1,12 @@
-import Layout from "./components/Layout"
+import Layout from "./components/layout/Layout"
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
 
   return (
     <>
-      <div>
-        <Layout title="Mi pagina"/>
-      </div>
+        <Layout title="Mi pagina" toast={toast}/>
+        <Toaster position="top-right"/>
     </>
   )
 }

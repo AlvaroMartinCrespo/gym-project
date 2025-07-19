@@ -34,10 +34,12 @@ export function useAuth() {
     return { data, error }
   }
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, rememberMe = true) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    }, {
+      persistSession: rememberMe
     })
     return { data, error }
   }

@@ -5,13 +5,8 @@ import Register from '../../components/register/register'
 import Calendario from '../calendario/calendario'
 import Ranking from '../ranking/ranking'
 import Perfil from '../perfil/perfil'
-
 import {
     Typography,
-    TextField,
-    Button,
-    Card,
-    CardContent,
     BottomNavigation,
     BottomNavigationAction,
     Drawer,
@@ -32,8 +27,6 @@ import {
     EmojiEvents,
     Menu,
     Logout,
-    Delete,
-    FitnessCenter
   } from '@mui/icons-material'
 
 export default function Layout({title, toast}){

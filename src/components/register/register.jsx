@@ -85,11 +85,11 @@ export default function Register({ toast, setIsLogin, isLogin }) {
   }
 
   return (
-    <div className="flex items-center justify-center flex-col min-h-screen px-4 bg-gradient-to-br from-gray-900 to-black text-white">
-      <Typography variant="h4" component="h2" className="text-white font-bold mb-6">
+    <div className="flex items-center justify-center flex-col min-h-screen px-4">
+      <Typography variant="h4" component="h2" className="text-black font-bold mb-6">
         Registrarse
       </Typography>
-      <div className="w-full max-w-xs sm:max-w-sm bg-white rounded-2xl p-6 shadow-xl text-gray-900">
+      <div className="w-full max-w-xs sm:max-w-sm p-6 text-gray-900">
         <form
           className="flex flex-col gap-4"
           onSubmit={handleSubmit}

@@ -39,17 +39,16 @@ export default function Layout({title, toast}){
     const getContent = (route) =>{  
         switch(route){
             case 'calendario':
-                return <Calendario />
+                return <Calendario toast={toast}/>
             case 'perfil':
-                return <Perfil />
+                return <Perfil toast={toast}/>
             case 'ranking':
-                return <Ranking />
+                return <Ranking toast={toast}/>
         }
     }
   
     const handleBottomNavChange = (event, newValue) => {
         setBottomNavValue(newValue)
-        console.log(newValue)
         switch(newValue) {
           case 0:
             setRoute('calendario')

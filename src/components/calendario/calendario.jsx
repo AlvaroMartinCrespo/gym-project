@@ -204,6 +204,7 @@ export default function Calendario({ toast }) {
         .from('rutinas')
         .upsert([{
           user_id: user.id,
+          email: user.email,
           fecha: fecha
         }], { 
           onConflict: 'user_id,fecha',

@@ -23,10 +23,12 @@ import {
     TrendingUp
 } from '@mui/icons-material'
 import { useState, useEffect } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../db/supabaseClient'
 
 export default function Ranking({ toast }) {
     const [loading, setLoading] = useState(true)
+    const { user } = useAuth()
     const [selectedCategory, setSelectedCategory] = useState(0)
     const [categories, setCategories] = useState([])
     const [rankings, setRankings] = useState({})
@@ -92,7 +94,8 @@ export default function Ranking({ toast }) {
                         ejercicio_id,
                         rutinas!inner (
                             user_id,
-                            fecha
+                            fecha,
+                            email
                         ),
                         ejercicios!inner (
                             nombre,
@@ -120,11 +123,13 @@ export default function Ranking({ toast }) {
 
                     exerciseSeries.forEach(serie => {
                         const userId = serie.rutinas.user_id
+                        const userEmail = serie.rutinas.email
                         const currentWeight = parseFloat(serie.peso)
 
                         if (!userRecords[userId] || currentWeight > userRecords[userId].peso) {
                             userRecords[userId] = {
                                 userId,
+                                email: userEmail,
                                 peso: currentWeight,
                                 repeticiones: serie.repeticiones,
                                 fecha: serie.rutinas.fecha
@@ -170,15 +175,30 @@ export default function Ranking({ toast }) {
         try {
             const userDataMap = {}
             
-            // Para cada userId, intentamos obtener información básica
-            // Nota: En una implementación real, podrías tener una tabla de perfiles
-            // Por ahora usaremos el ID como fallback
+            // Obtener información de usuarios usando el Admin API de Supabase
             for (const userId of allUserIds) {
-                // Aquí podrías hacer una consulta a una tabla de perfiles si la tienes
-                // Por simplicidad, usaremos el email parcial como nombre
-                userDataMap[userId] = {
-                    name: `Usuario ${userId.slice(-4)}`, // Últimos 4 caracteres del ID
-                    email: `user${userId.slice(-4)}@gym.com` // Email simulado
+                try {
+                    // Intentar obtener el usuario desde Supabase Auth
+                    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId)
+                    
+                    if (userData?.user && !userError) {
+                        userDataMap[userId] = {
+                            name: userData.user.email?.split('@')[0] || `Usuario ${userId.slice(-4)}`,
+                            email: userData.user.email || `user${userId.slice(-4)}@gym.com`
+                        }
+                    } else {
+                        // Fallback si no se puede obtener el usuario
+                        userDataMap[userId] = {
+                            name: `user${userId.slice(-4)}@gym.com`,
+                            email: `user${userId.slice(-4)}@gym.com`
+                        }
+                    }
+                } catch (authError) {
+                    // Si falla la consulta de auth, usar el email simulado
+                    userDataMap[userId] = {
+                        name: `user${userId.slice(-4)}@gym.com`,
+                        email: `user${userId.slice(-4)}@gym.com`
+                    }
                 }
             }
 
@@ -188,8 +208,8 @@ export default function Ranking({ toast }) {
                     allRankings[category][exercise] = allRankings[category][exercise].map(record => ({
                         ...record,
                         userData: userDataMap[record.userId] || { 
-                            name: `Usuario ${record.userId.slice(-4)}`, 
-                            email: 'unknown@gym.com' 
+                            name: `user${record.userId.slice(-4)}@gym.com`, 
+                            email: `user${record.userId.slice(-4)}@gym.com`
                         }
                     }))
                 })
@@ -340,7 +360,7 @@ export default function Ranking({ toast }) {
                                                                 primary={
                                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                                         <Typography variant="body1" fontWeight="medium">
-                                                                            {record.userData?.name || `Usuario ${record.userId.slice(-4)}`}
+                                                                            {record.email}
                                                                         </Typography>
                                                                         <Chip
                                                                             label={`${record.peso} kg`}
